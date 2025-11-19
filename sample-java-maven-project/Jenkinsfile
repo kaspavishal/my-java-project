@@ -1,9 +1,38 @@
 pipeline {
     agent any
+
     stages {
-        stage('Checkout') { steps { checkout scm } }
-        stage('Build') { steps { bat 'mvn clean package' } }
-        stage('Run') { steps { bat 'for %%f in (target\\*.jar) do java -jar %%f' } }
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Run') {
+            steps {
+                // Finds the jar and runs it
+                bat '''
+                for %%f in (target\\*.jar) do (
+                    echo Running %%f
+                    java -jar %%f
+                )
+                '''
+            }
+        }
     }
-    post { success { echo 'BUILD SUCCESS' } failure { echo 'BUILD FAILED' } }
+
+    post {
+        success {
+            echo 'BUILD SUCCESS'
+        }
+        failure {
+            echo 'BUILD FAILED'
+        }
+    }
 }
