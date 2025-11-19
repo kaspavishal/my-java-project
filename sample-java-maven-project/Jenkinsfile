@@ -10,19 +10,24 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'mvn clean package'
+                // run mvn inside the folder that contains pom.xml
+                dir('sample-java-maven-project') {
+                    bat 'mvn -B clean package'
+                }
             }
         }
 
         stage('Run') {
             steps {
-                // Finds the jar and runs it
-                bat '''
-                for %%f in (target\\*.jar) do (
-                    echo Running %%f
-                    java -jar %%f
-                )
-                '''
+                dir('sample-java-maven-project') {
+                    // Finds jar and runs it (Windows)
+                    bat '''
+                    for %%f in (target\\*.jar) do (
+                        echo Running %%f
+                        java -jar %%f
+                    )
+                    '''
+                }
             }
         }
     }
